@@ -3,27 +3,61 @@ import glob
 import os
 import matplotlib.pyplot as plt
 import re
+import sys
+
+#if in One-Drive
+sys.path.append(r"C:\Users\Marijus\miniconda3\envs\Spectra\Lib\site-packages")
 
 # Folder path
 folder = r"C:\Users\Marijus\OneDrive - Vilnius University\3 semestras\cern\cern_data_analysis_project\20250722_05nJ_06-10um_Spectras"
-file = glob.glob(os.path.join(folder, "*.xlsx"))[0]
+files = glob.glob(os.path.join(folder, "*.xlsx"))
 
-df = pd.read_excel(file, sheet_name="Calibration 1-Measurements")
-wavelength_col = df.columns[0]
-s_cols = [c for c in df.columns if c.endswith(" S ")]
-
+# Function to extract angle from column name
 def get_angle(col):
-    angle = re.search(r'R (\d+)', col)
-    return angle.group(1) + "°"
+    match = re.search(r'R (\d+)', col)
+    if match:
+        return match.group(1) + "°"
+    else:
+        return col
 
-print(f"Working with: {os.path.basename(file)}")
+# Function to extract period from filename
+def get_period(f):
+    match = re.search(r'_(\d+)um', os.path.basename(f))
+    if match:
+        period_num = int(match.group(1)) / 10
+        return f"{period_num} μm"
+    else:
+        return "Unknown Period"
 
-plt.figure(figsize=(10, 5))
-for col in s_cols:
-    angle_label = get_angle(col)
-    plt.plot(df[wavelength_col], df[col], label = angle_label)
-plt.legend()
-plt.title("S polarization: 0.8um, 0.5 nJ, Ag 50 nm ITO")
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Reflection (%)")
-plt.show()
+# Read the Excel file and plot the data
+for f in files:
+    print(f"Working with: {os.path.basename(f)}")
+    period = get_period(f)
+    df = pd.read_excel(f, sheet_name="Calibration 1-Measurements")
+    wavelength_col = df.columns[0]
+    s_cols = [c for c in df.columns if c.endswith(" S ")]
+    p_cols = [c for c in df.columns if c.endswith(" P ")]
+
+    # Plot S polarization
+    plt.figure(figsize=(10, 5))
+    for col in s_cols:
+        plt.plot(df[wavelength_col], df[col], label = get_angle(col))
+    # Design the plot
+    plt.legend()
+    plt.title(f"S polarization: {period}, 0.5 nJ, Ag 50 nm ITO")
+    plt.xlabel("Wavelength (nm)")
+    plt.ylabel("Reflection (%)")
+    plt.grid()
+    plt.show()
+
+    # Plot P polarization
+    plt.figure(figsize=(10, 5))
+    for col in p_cols:
+        plt.plot(df[wavelength_col], df[col], label = get_angle(col))
+    # Design the plot
+    plt.legend()
+    plt.title(f"P polarization: {period}, 0.5 nJ, Ag 50 nm ITO")
+    plt.xlabel("Wavelength (nm)")
+    plt.ylabel("Reflection (%)")
+    plt.grid()
+    plt.show()
