@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import re
 
 # Folder path
-folder = r"C:\Users\Marijus\Documents\FTMC\SPEKTRAI\2025.07.22 0.5 nJ, 0.6-1.0 um, Ag 50nm ITO"
-file = glob.glob(os.path.join(folder, "*.xls"))[2]
+folder = r"C:\Users\Marijus\OneDrive - Vilnius University\3 semestras\cern\cern_data_analysis_project\20250722_05nJ_06-10um_Spectras"
+file = glob.glob(os.path.join(folder, "*.xlsx"))[0]
 
 df = pd.read_excel(file, sheet_name="Calibration 1-Measurements")
 wavelength_col = df.columns[0]
