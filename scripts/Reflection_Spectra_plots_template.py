@@ -10,6 +10,7 @@ sys.path.append(r"C:\Users\Marijus\miniconda3\envs\Spectra\Lib\site-packages")
 
 # Folder path
 folder = r"C:\Users\Marijus\OneDrive - Vilnius University\3 semestras\cern\cern_data_analysis_project\20250722_05nJ_06-10um_Spectras"
+output_folder = r"C:\Users\Marijus\OneDrive - Vilnius University\3 semestras\cern\cern_data_analysis_project\results"
 files = glob.glob(os.path.join(folder, "*.xlsx"))
 
 # Function to extract angle from column name
@@ -48,7 +49,8 @@ for f in files:
     plt.xlabel("Wavelength (nm)")
     plt.ylabel("Reflection (%)")
     plt.grid()
-    plt.show()
+    plt.savefig(os.path.join(output_folder, f"{os.path.basename(f)}_S.png"))
+    plt.close()
 
     # Plot P polarization
     plt.figure(figsize=(10, 5))
@@ -60,4 +62,5 @@ for f in files:
     plt.xlabel("Wavelength (nm)")
     plt.ylabel("Reflection (%)")
     plt.grid()
-    plt.show()
+    plt.savefig(os.path.join(output_folder, f"{os.path.basename(f)}_P.png"))
+    plt.close()
