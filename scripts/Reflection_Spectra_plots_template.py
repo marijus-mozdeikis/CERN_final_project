@@ -38,6 +38,7 @@ for f in files:
     wavelength_col = df.columns[0]
     s_cols = [c for c in df.columns if c.endswith(" S ")]
     p_cols = [c for c in df.columns if c.endswith(" P ")]
+    base_name = os.path.splitext(os.path.basename(f))[0]
 
     # Plot S polarization
     plt.figure(figsize=(10, 5))
@@ -49,7 +50,7 @@ for f in files:
     plt.xlabel("Wavelength (nm)")
     plt.ylabel("Reflection (%)")
     plt.grid()
-    plt.savefig(os.path.join(output_folder, f"{os.path.basename(f)}_S.png"))
+    plt.savefig(os.path.join(output_folder, f"{base_name}_S.png"))
     plt.close()
 
     # Plot P polarization
@@ -62,5 +63,5 @@ for f in files:
     plt.xlabel("Wavelength (nm)")
     plt.ylabel("Reflection (%)")
     plt.grid()
-    plt.savefig(os.path.join(output_folder, f"{os.path.basename(f)}_P.png"))
+    plt.savefig(os.path.join(output_folder, f"{base_name}_P.png"))
     plt.close()
