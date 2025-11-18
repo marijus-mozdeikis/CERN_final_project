@@ -30,6 +30,7 @@ fig, ax = plt.subplots(figsize=(10,5))
 plt.subplots_adjust(bottom=0.25)
 line_signal, = ax.plot(wavelengths, signal_values, label='Signal')
 scatter_peaks = ax.scatter(wavelengths[peaks], signal_values[peaks], color='red', s=50, label='Peaks')
+scatter_leftbase = ax.scatter(wavelengths[properties['left_bases']], signal_values[properties['left_bases']], color='green', s=40, label='Left Baseline')
 ax.set_xlabel('Wavelength (nm)')
 ax.set_ylabel('Reflection (inverted)')
 ax.legend()
@@ -41,17 +42,31 @@ ax_dist = plt.axes([0.25, 0.15, 0.65, 0.03])
 slider_prom = Slider(ax_prom, 'Prominence', 0, 10, valinit=threshold, valstep=0.5)
 slider_dist = Slider(ax_dist, 'Min Distance', 0, 50, valinit=min_distance, valstep=2)
 
-# Update function
+# Update parameters function
 def update(val):
     prom = slider_prom.val
     dist = int(slider_dist.val)
     peaks, properties = find_peaks(signal_values, prominence=prom, distance=dist)
     
     scatter_peaks.set_offsets(np.c_[wavelengths[peaks], signal_values[peaks]])
+    scatter_leftbase.set_offsets(np.c_[wavelengths[properties['left_bases']], signal_values[properties['left_bases']]])
+    left_bases = properties['left_bases']
+    
+    for p, lb in zip(peaks, left_bases):
+        baseline_value = signal_values[lb]
+        peak_value = signal_values[p]
+        depth = baseline_value - peak_value
+
+        print("Peak at:", wavelengths[p],
+              "| Left baseline:", wavelengths[lb],
+              "| Baseline value:", baseline_value,
+              "| Depth:", depth)
+
     fig.canvas.draw_idle()
 
 # Connect sliders
 slider_prom.on_changed(update)
 slider_dist.on_changed(update)
 
+update(None)
 plt.show()
