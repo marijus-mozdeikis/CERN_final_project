@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
-from peak_tools import detect_peaks, calculate_depths
+from peak_tools import detect_peaks, calculate_depths, calculate_fwhm
 
 def plot_with_sliders(wavelengths, signal, init_prom=4, init_dist=10):
     """Interactive plot with peak detection and adjustable sliders."""
@@ -41,12 +41,14 @@ def plot_with_sliders(wavelengths, signal, init_prom=4, init_dist=10):
         sc_base.set_offsets(np.c_[wavelengths[props["left_bases"]], signal[props["left_bases"]]])
 
         depths = calculate_depths(signal, peaks, props)
+        fwhms = calculate_fwhm(signal, wavelengths, peaks, props["left_bases"])
 
         print("\nDetected dips:")
-        for d in depths:
+        for d, f in zip(depths, fwhms):
             lam = wavelengths[d["peak_index"]]
             lam_base = wavelengths[d["baseline_index"]]
-            print(f"λ={lam:.2f} | baseline λ={lam_base:.2f} | depth={d['depth']:.2f}")
+            depth = abs(d["depth"])
+            print(f"λ={lam:.2f} | baseline λ={lam_base:.2f} | depth={depth:.2f} | FWHM={f['fwhm']:.2f} nm")
 
         fig.canvas.draw_idle()
 
