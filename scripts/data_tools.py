@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import numpy as np
 
-def load_signal(folder, filename, column_suffix):
+def load_signal(folder, filename, column_suffix, multiple=False):
     """Load wavelength array and inverted signal from an Excel file."""
 
     # --- Locate file ---
@@ -18,18 +18,15 @@ def load_signal(folder, filename, column_suffix):
     if not p_cols:
         raise ValueError(f"No columns ending with '{column_suffix}' found")
 
-    signal_col = p_cols[0]
+    wavelengths = pd.to_numeric(df[df.columns[0]], errors="coerce").values
 
-    # --- Convert wavelength + signal column to numeric ---
-    df[df.columns[0]] = pd.to_numeric(df[df.columns[0]], errors="coerce")
-    df[signal_col] = pd.to_numeric(df[signal_col], errors="coerce")
+    signals = {}
+    for col in p_cols:
+        raw = pd.to_numeric(df[col], errors="coerce").values
+        inv = np.nanmax(raw) - raw
+        signals[col] = inv
 
-    # --- Extract arrays ---
-    wavelengths = df[df.columns[0]].values
-    signal_raw = df[signal_col].values
-
-    # --- Invert signal (dip detection) ---
-    signal = np.nanmax(signal_raw) - signal_raw
-
+    if multiple:
+        return {col: (wavelengths, df[col].max() - df[col].values) for col in p_cols}
     return wavelengths, signal
 

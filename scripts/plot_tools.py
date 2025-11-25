@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 from peak_tools import detect_peaks, calculate_depths, calculate_fwhm
 
-def plot_with_sliders(wavelengths, signal, init_prom=4, init_dist=10):
+def plot_with_sliders(wavelengths, signal, init_prom=4, init_dist=10, title="Signal"):
     """Interactive plot with peak detection and adjustable sliders."""
 
     # --- Initial peak detection ---
@@ -11,6 +11,7 @@ def plot_with_sliders(wavelengths, signal, init_prom=4, init_dist=10):
 
     # --- Figure layout ---
     fig, ax = plt.subplots(figsize=(10, 5))
+    ax.set_title(title)
     plt.subplots_adjust(bottom=0.25)
 
     # --- Main plot ---
